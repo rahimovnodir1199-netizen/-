@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Планировщик учебной недели — задачи, расписание и дедлайны для школьников и студентов">
+  <meta name="theme-color" content="#0a1628">
+  <title>Планировщик</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon.png" type="image/png" sizes="32x32">
+  <link rel="icon" href="assets/brand/logo-planner.png" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="assets/brand/logo-planner.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <!-- Онбординг: выбор типа пользователя -->
+  <div id="onboarding" class="onboarding hidden" aria-hidden="true">
+    <div class="onboarding__card glass">
+      <div class="onboarding__logo">
+        <img src="assets/brand/logo-planner.png" alt="Планировщик" class="brand-mark brand-mark--lg" width="88" height="88">
+        <h1 class="brand-title">Планировщик</h1>
+        <p class="onboarding__tagline">Учебная неделя — задачи, расписание и время</p>
+      </div>
+      <p class="onboarding__question">Кто вы?</p>
+      <div class="onboarding__choices">
+        <button type="button" class="choice-card" data-user-type="school">
+          <span class="choice-card__icon">🎒</span>
+          <span class="choice-card__title">Школьник</span>
+          <span class="choice-card__desc">Уроки 45 мин, перемены 5–10 мин</span>
+        </button>
+        <button type="button" class="choice-card" data-user-type="student">
+          <span class="choice-card__icon">🎓</span>
+          <span class="choice-card__title">Студент</span>
+          <span class="choice-card__desc">Пары 90 мин, гибкое расписание</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="app" class="app hidden">
+    <!-- Боковая навигация (десктоп) -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar__brand">
+        <img src="assets/brand/logo-planner.png" alt="Планировщик" class="brand-mark" width="40" height="40">
+        <div>
+          <span class="sidebar__title">Планировщик</span>
+          <span class="sidebar__badge" id="userTypeBadge">Школьник</span>
+        </div>
+      </div>
+      <nav class="sidebar__nav" aria-label="Основная навигация">
+        <a href="#home" class="nav-link active" data-page="home">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+          <span>Главная</span>
+        </a>
+        <a href="#planner" class="nav-link" data-page="planner">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>Неделя</span>
+        </a>
+        <a href="#tasks" class="nav-link" data-page="tasks">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+          <span>Задачи</span>
+        </a>
+        <a href="#calendar" class="nav-link" data-page="calendar">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><line x1="8" y1="14" x2="8" y2="14.01"/><line x1="12" y1="14" x2="12" y2="14.01"/><line x1="16" y1="14" x2="16" y2="14.01"/></svg>
+          <span>Календарь</span>
+        </a>
+        <a href="#matrix" class="nav-link" data-page="matrix">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          <span>Матрица</span>
+        </a>
+        <a href="#settings" class="nav-link" data-page="settings">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+          <span>Настройки</span>
+        </a>
+      </nav>
+      <div class="sidebar__stats glass-sm">
+        <div class="stat-mini">
+          <span class="stat-mini__value" id="sidebarStreak">0</span>
+          <span class="stat-mini__label">дней подряд</span>
+        </div>
+        <div class="stat-mini">
+          <span class="stat-mini__value" id="sidebarProgress">0%</span>
+          <span class="stat-mini__label">выполнено</span>
+        </div>
+      </div>
+    </aside>
+
+    <div class="main-wrapper">
+      <!-- Верхняя панель -->
+      <header class="topbar glass">
+        <button type="button" class="btn-icon menu-toggle" id="menuToggle" aria-label="Открыть меню">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </button>
+        <div class="topbar__search">
+          <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="search" id="globalSearch" placeholder="Поиск задач..." autocomplete="off">
+        </div>
+        <div class="topbar__actions">
+          <button type="button" class="btn-icon" id="notifBtn" aria-label="Уведомления" title="Уведомления">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
+            <span class="badge-dot hidden" id="notifDot"></span>
+          </button>
+          <button type="button" class="theme-toggle" id="themeToggle" aria-label="Переключить тему">
+            <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            <svg class="icon-moon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+          </button>
+          <button type="button" class="btn btn-primary btn-quick-add" id="quickAddBtn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            <span>Задача</span>
+          </button>
+        </div>
+      </header>
+
+      <main class="content" id="mainContent">
+        <!-- ГЛАВНАЯ -->
+        <section class="page active" id="page-home" data-page="home">
+          <div class="page-header">
+            <div>
+              <h1 class="page-title" id="greeting">Добрый день!</h1>
+              <p class="page-subtitle" id="todayDate"></p>
+            </div>
+          </div>
+
+          <div class="dashboard-grid">
+            <div class="dash-card glass progress-card">
+              <h3>Прогресс сегодня</h3>
+              <div class="progress-ring-wrap">
+                <svg class="progress-ring" viewBox="0 0 120 120">
+                  <circle class="progress-ring__bg" cx="60" cy="60" r="52"/>
+                  <circle class="progress-ring__fill" id="progressRing" cx="60" cy="60" r="52"/>
+                </svg>
+                <span class="progress-ring__text" id="progressPercent">0%</span>
+              </div>
+              <p class="progress-detail" id="progressDetail">0 из 0 задач</p>
+            </div>
+
+            <div class="dash-card glass streak-card">
+              <div class="streak-flame">🔥</div>
+              <div>
+                <span class="streak-number" id="streakCount">0</span>
+                <span class="streak-label">дней подряд</span>
+              </div>
+              <p class="streak-hint">Выполняйте задачи каждый день</p>
+            </div>
+
+            <div class="dash-card glass deadlines-card">
+              <h3>Ближайшие дедлайны</h3>
+              <ul class="deadline-list" id="deadlinesList"></ul>
+            </div>
+
+            <div class="dash-card glass notes-card">
+              <div class="card-header-row">
+                <h3>Быстрые заметки</h3>
+                <button type="button" class="btn-text" id="saveNoteBtn">Сохранить</button>
+              </div>
+              <textarea id="quickNotes" class="notes-textarea" placeholder="Запишите идею, напоминание или план..."></textarea>
+            </div>
+          </div>
+
+          <div class="section-block">
+            <div class="section-header">
+              <h2>Задачи на сегодня</h2>
+              <a href="#tasks" class="link-more" data-page="tasks">Все задачи →</a>
+            </div>
+            <div class="task-list" id="todayTasks"></div>
+          </div>
+
+          <div class="section-block schedule-preview">
+            <div class="section-header">
+              <h2>Расписание сегодня</h2>
+              <a href="#planner" class="link-more" data-page="planner">Неделя →</a>
+            </div>
+            <div class="timeline" id="todayTimeline"></div>
+          </div>
+
+          <!-- Матрица — компактный превью внизу главной -->
+          <div class="section-block matrix-preview">
+            <div class="section-header">
+              <h2>Матрица Эйзенхауэра</h2>
+              <a href="#matrix" class="link-more" data-page="matrix">Подробнее →</a>
+            </div>
+            <div class="matrix-mini" id="matrixMini"></div>
+          </div>
+        </section>
+
+        <!-- ПЛАНИРОВЩИК НЕДЕЛИ -->
+        <section class="page" id="page-planner" data-page="planner">
+          <div class="page-header">
+            <h1 class="page-title">Планировщик недели</h1>
+            <div class="week-nav">
+              <button type="button" class="btn-icon" id="prevWeek" aria-label="Предыдущая неделя">‹</button>
+              <span id="weekLabel"></span>
+              <button type="button" class="btn-icon" id="nextWeek" aria-label="Следующая неделя">›</button>
+              <button type="button" class="btn btn-ghost" id="todayWeek">Сегодня</button>
+            </div>
+          </div>
+          <div class="week-grid" id="weekGrid"></div>
+          <div class="planner-schedule glass">
+            <h3>Расписание уроков</h3>
+            <div class="schedule-settings-hint">
+              <span id="scheduleModeLabel">Режим: школьник</span>
+              <a href="#settings" data-page="settings" class="link-more">Настроить →</a>
+            </div>
+            <div class="day-schedule-detail" id="selectedDaySchedule"></div>
+          </div>
+        </section>
+
+        <!-- ЗАДАЧИ -->
+        <section class="page" id="page-tasks" data-page="tasks">
+          <div class="page-header">
+            <h1 class="page-title">Задачи</h1>
+            <button type="button" class="btn btn-primary" id="addTaskBtn">+ Новая задача</button>
+          </div>
+          <div class="filters-bar glass">
+            <select id="filterSubject" aria-label="Фильтр по предмету">
+              <option value="">Все предметы</option>
+            </select>
+            <select id="filterPriority" aria-label="Фильтр по приоритету">
+              <option value="">Все приоритеты</option>
+              <option value="high">Высокий</option>
+              <option value="medium">Средний</option>
+              <option value="low">Низкий</option>
+            </select>
+            <select id="filterStatus" aria-label="Фильтр по статусу">
+              <option value="active">Активные</option>
+              <option value="completed">Выполненные</option>
+              <option value="archived">Архив</option>
+              <option value="all">Все</option>
+            </select>
+            <select id="filterCategory" aria-label="Фильтр по категории">
+              <option value="">Все категории</option>
+              <option value="study">Учёба</option>
+              <option value="homework">Домашнее задание</option>
+              <option value="exam">Экзамен / контрольная</option>
+              <option value="project">Проект</option>
+              <option value="other">Другое</option>
+            </select>
+          </div>
+          <div class="task-list task-list--full" id="allTasks"></div>
+        </section>
+
+        <!-- КАЛЕНДАРЬ -->
+        <section class="page" id="page-calendar" data-page="calendar">
+          <div class="page-header">
+            <h1 class="page-title">Календарь</h1>
+            <div class="cal-nav">
+              <button type="button" class="btn-icon" id="prevMonth">‹</button>
+              <span id="monthLabel"></span>
+              <button type="button" class="btn-icon" id="nextMonth">›</button>
+            </div>
+          </div>
+          <div class="calendar-wrap glass">
+            <div class="calendar-weekdays">
+              <span>Пн</span><span>Вт</span><span>Ср</span><span>Чт</span><span>Пт</span><span>Сб</span><span>Вс</span>
+            </div>
+            <div class="calendar-days" id="calendarDays"></div>
+          </div>
+          <div class="cal-sidebar">
+            <h3 id="selectedCalDate">Выберите день</h3>
+            <div class="task-list" id="calDayTasks"></div>
+          </div>
+        </section>
+
+        <!-- МАТРИЦА ЭЙЗЕНХАУЭРА -->
+        <section class="page" id="page-matrix" data-page="matrix">
+          <div class="page-header">
+            <h1 class="page-title">Матрица Эйзенхауэра</h1>
+            <p class="page-subtitle">Дополнительный инструмент приоритизации</p>
+          </div>
+          <div class="matrix-grid" id="matrixGrid">
+            <div class="matrix-quadrant" data-quadrant="urgent-important">
+              <h3><span class="q-dot q-dot--ui"></span> Важно и срочно</h3>
+              <div class="matrix-tasks" id="q-ui"></div>
+            </div>
+            <div class="matrix-quadrant" data-quadrant="not-urgent-important">
+              <h3><span class="q-dot q-dot--nui"></span> Важно, не срочно</h3>
+              <div class="matrix-tasks" id="q-nui"></div>
+            </div>
+            <div class="matrix-quadrant" data-quadrant="urgent-not-important">
+              <h3><span class="q-dot q-dot--uni"></span> Срочно, не важно</h3>
+              <div class="matrix-tasks" id="q-uni"></div>
+            </div>
+            <div class="matrix-quadrant" data-quadrant="not-urgent-not-important">
+              <h3><span class="q-dot q-dot--nuni"></span> Не срочно и не важно</h3>
+              <div class="matrix-tasks" id="q-nuni"></div>
+            </div>
+          </div>
+          <p class="matrix-hint">Нажмите на иконку категории в задаче, чтобы переместить её в квадрант</p>
+        </section>
+
+        <!-- НАСТРОЙКИ -->
+        <section class="page" id="page-settings" data-page="settings">
+          <div class="page-header">
+            <h1 class="page-title">Настройки</h1>
+          </div>
+
+          <div class="settings-grid">
+            <div class="settings-card glass">
+              <h3>Профиль</h3>
+              <p class="settings-desc">Тип обучения влияет на расписание</p>
+              <div class="radio-group">
+                <label class="radio-pill">
+                  <input type="radio" name="userType" value="school">
+                  <span>Школьник</span>
+                </label>
+                <label class="radio-pill">
+                  <input type="radio" name="userType" value="student">
+                  <span>Студент</span>
+                </label>
+              </div>
+            </div>
+
+            <div class="settings-card glass">
+              <h3>Расписание</h3>
+              <div class="form-group">
+                <label>Длительность занятия (мин)</label>
+                <input type="number" id="lessonDuration" min="30" max="120" step="5">
+              </div>
+              <div class="form-group">
+                <label>Обычная перемена (мин)</label>
+                <input type="number" id="shortBreak" min="5" max="20" step="1">
+              </div>
+              <div class="form-group">
+                <label>Большая перемена (мин)</label>
+                <input type="number" id="longBreak" min="15" max="45" step="5">
+              </div>
+              <div class="form-group">
+                <label>Большая перемена после урока №</label>
+                <input type="number" id="longBreakAfter" min="2" max="8" step="1">
+              </div>
+              <div class="form-group">
+                <label>Начало первого урока</label>
+                <input type="time" id="schoolStart">
+              </div>
+              <div class="form-group">
+                <label>Количество уроков в день</label>
+                <input type="number" id="lessonsPerDay" min="4" max="10" step="1">
+              </div>
+              <button type="button" class="btn btn-secondary" id="applySchedulePreset">Применить пресет</button>
+            </div>
+
+            <div class="settings-card glass">
+              <h3>Предметы</h3>
+              <p class="settings-desc">Создавайте свои предметы и меняйте цвета</p>
+              <div class="subjects-list" id="subjectsList"></div>
+              <div class="add-subject-row">
+                <input type="text" id="newSubjectName" placeholder="Новый предмет">
+                <input type="color" id="newSubjectColor" value="#3b82f6">
+                <button type="button" class="btn btn-secondary" id="addSubjectBtn">Добавить</button>
+              </div>
+            </div>
+
+            <div class="settings-card glass">
+              <h3>Уведомления</h3>
+              <label class="toggle-row">
+                <span>Напоминания о задачах</span>
+                <input type="checkbox" id="notifTasks" checked>
+                <span class="toggle"></span>
+              </label>
+              <label class="toggle-row">
+                <span>Перед уроком / парой</span>
+                <input type="checkbox" id="notifLessons" checked>
+                <span class="toggle"></span>
+              </label>
+              <label class="toggle-row">
+                <span>Дедлайны</span>
+                <input type="checkbox" id="notifDeadlines" checked>
+                <span class="toggle"></span>
+              </label>
+              <button type="button" class="btn btn-secondary" id="enablePushBtn">Включить push-уведомления</button>
+              <p class="settings-hint" id="notifStatus">Статус: не запрошено</p>
+            </div>
+
+            <div class="settings-card glass">
+              <h3>Статистика</h3>
+              <div class="stats-grid">
+                <div class="stat-box">
+                  <span class="stat-box__value" id="statTotal">0</span>
+                  <span class="stat-box__label">Всего задач</span>
+                </div>
+                <div class="stat-box">
+                  <span class="stat-box__value" id="statDone">0</span>
+                  <span class="stat-box__label">Выполнено</span>
+                </div>
+                <div class="stat-box">
+                  <span class="stat-box__value" id="statWeek">0</span>
+                  <span class="stat-box__label">За неделю</span>
+                </div>
+                <div class="stat-box">
+                  <span class="stat-box__value" id="statRate">0%</span>
+                  <span class="stat-box__label">Продуктивность</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="settings-card glass danger-zone">
+              <h3>Данные</h3>
+              <button type="button" class="btn btn-ghost" id="exportDataBtn">Экспорт JSON</button>
+              <button type="button" class="btn btn-danger" id="clearDataBtn">Сбросить все данные</button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- Нижняя навигация (мобильная) -->
+    <nav class="bottom-nav" aria-label="Мобильная навигация">
+      <a href="#home" class="bottom-nav__link active" data-page="home">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>
+        <span>Главная</span>
+      </a>
+      <a href="#planner" class="bottom-nav__link" data-page="planner">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        <span>Неделя</span>
+      </a>
+      <button type="button" class="bottom-nav__fab" id="fabAdd" aria-label="Добавить задачу">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
+      <a href="#tasks" class="bottom-nav__link" data-page="tasks">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        <span>Задачи</span>
+      </a>
+      <a href="#settings" class="bottom-nav__link" data-page="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+        <span>Ещё</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- Модальное окно задачи -->
+  <div class="modal-overlay hidden" id="taskModal" role="dialog" aria-labelledby="taskModalTitle" aria-modal="true">
+    <div class="modal glass">
+      <div class="modal__header">
+        <h2 id="taskModalTitle">Новая задача</h2>
+        <button type="button" class="btn-icon modal__close" id="closeTaskModal" aria-label="Закрыть">×</button>
+      </div>
+      <form id="taskForm" class="modal__body">
+        <input type="hidden" id="taskId">
+        <div class="form-group">
+          <label for="taskTitle">Название *</label>
+          <input type="text" id="taskTitle" required placeholder="Например: подготовить доклад" autocomplete="off">
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="taskSubject">Предмет</label>
+            <select id="taskSubject"></select>
+          </div>
+          <div class="form-group">
+            <label for="taskCategory">Категория</label>
+            <select id="taskCategory">
+              <option value="study">Учёба</option>
+              <option value="homework">Домашнее задание</option>
+              <option value="exam">Экзамен / контрольная</option>
+              <option value="project">Проект</option>
+              <option value="other">Другое</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="taskDescription">Описание</label>
+          <textarea id="taskDescription" rows="3" placeholder="Подробности, ссылки, требования..."></textarea>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="taskDate">Дата</label>
+            <input type="date" id="taskDate">
+          </div>
+          <div class="form-group">
+            <label for="taskTime">Время</label>
+            <input type="time" id="taskTime">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="taskPriority">Приоритет</label>
+            <select id="taskPriority">
+              <option value="high">Высокий</option>
+              <option value="medium" selected>Средний</option>
+              <option value="low">Низкий</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Матрица (доп.)</label>
+            <div class="matrix-picker" id="matrixPicker">
+              <button type="button" class="matrix-pick-btn" data-quadrant="urgent-important" title="Важно и срочно">Q1</button>
+              <button type="button" class="matrix-pick-btn" data-quadrant="not-urgent-important" title="Важно, не срочно">Q2</button>
+              <button type="button" class="matrix-pick-btn" data-quadrant="urgent-not-important" title="Срочно, не важно">Q3</button>
+              <button type="button" class="matrix-pick-btn" data-quadrant="not-urgent-not-important" title="Не срочно и не важно">Q4</button>
+            </div>
+            <input type="hidden" id="taskQuadrant" value="">
+          </div>
+        </div>
+        <div class="modal__footer">
+          <button type="button" class="btn btn-ghost" id="archiveTaskBtn">В архив</button>
+          <button type="button" class="btn btn-danger hidden" id="deleteTaskBtn">Удалить</button>
+          <button type="submit" class="btn btn-primary">Сохранить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Быстрое добавление -->
+  <div class="quick-add-bar hidden" id="quickAddBar">
+    <input type="text" id="quickAddInput" placeholder="Быстро добавить задачу..." autocomplete="off">
+    <button type="button" class="btn btn-primary btn-sm" id="quickAddSubmit">Добавить</button>
+    <button type="button" class="btn-icon" id="quickAddExpand" title="Подробнее">⋯</button>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <script src="js/utils.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/notifications.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
