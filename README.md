@@ -4,21 +4,8 @@
 
 **Репозиторий:** [github.com/rahimovnodir1199-netizen/-](https://github.com/rahimovnodir1199-netizen/-)
 
-**Сайт (GitHub Pages):** после включения Pages в настройках репозитория — `https://rahimovnodir1199-netizen.github.io/-/`
+**Сайт  после включения Pages в настройках репозитория — `https://rahimovnodir1199-netizen.github.io/-/`
 
-## Запуск (только frontend)
-
-Откройте в браузере или через локальный сервер:
-
-```bash
-cd study-planner/frontend
-# Python 3
-python -m http.server 8080
-# или Node.js
-npx serve .
-```
-
-Перейдите на `http://localhost:8080`
 
 ## Структура проекта
 
